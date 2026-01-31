@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mortgage Pricing Assistant</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0}
+        html,body{height:100%;width:100%;overflow:hidden}
+        body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:#f8fafc;color:#1a1a1a;display:flex;flex-direction:column}
+        .chat-container{flex:1;display:flex;flex-direction:column;max-width:720px;width:100%;margin:0 auto;height:100%}
+        .messages{flex:1;overflow-y:auto;padding:0 16px;display:flex;flex-direction:column}
+        .messages::-webkit-scrollbar{width:5px}
+        .messages::-webkit-scrollbar-track{background:transparent}
+        .messages::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px}
+        .messages-inner{flex:1;display:flex;flex-direction:column;justify-content:center;min-height:100%}
+        .messages-inner.has-messages{justify-content:flex-start;padding-top:20px;padding-bottom:20px}
+        .message{margin-bottom:20px;animation:fadeIn .3s ease}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+        .message.user{display:flex;justify-content:flex-end}
+        .message.user .content{background:linear-gradient(135deg,#2563eb 0%,#1d4ed8 100%);border-radius:20px;padding:12px 18px;max-width:80%;color:#fff;font-size:15px;line-height:1.5;box-shadow:0 2px 8px rgba(37,99,235,0.25)}
+        .message.assistant .content{color:#1a1a1a;font-size:15px;line-height:1.7}
+        
+        /* Hero Card */
+        .hero-card{background:linear-gradient(135deg,#10b981 0%,#059669 100%);border-radius:16px;padding:20px 24px;margin-bottom:16px;color:#fff;box-shadow:0 4px 12px rgba(16,185,129,0.3)}
+        .hero-card.blue{background:linear-gradient(135deg,#3b82f6 0%,#2563eb 100%);box-shadow:0 4px 12px rgba(59,130,246,0.3)}
+        .hero-card.purple{background:linear-gradient(135deg,#8b5cf6 0%,#7c3aed 100%);box-shadow:0 4px 12px rgba(139,92,246,0.3)}
+        .hero-card .hero-label{font-size:12px;text-transform:uppercase;letter-spacing:1px;opacity:0.9;margin-bottom:4px}
+        .hero-card .hero-value{font-size:32px;font-weight:700}
+        .hero-card .hero-sub{font-size:13px;opacity:0.9;margin-top:4px}
+        
+        /* Info Cards Grid */
+        .cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:16px 0}
+        .info-card{background:#fff;border-radius:12px;padding:16px;border:1px solid #e2e8f0;transition:all .2s}
+        .info-card:hover{border-color:#3b82f6;box-shadow:0 4px 12px rgba(0,0,0,0.08)}
+        .info-card .card-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;font-size:18px}
+        .info-card .card-icon.green{background:#dcfce7;color:#16a34a}
+        .info-card .card-icon.blue{background:#dbeafe;color:#2563eb}
+        .info-card .card-icon.purple{background:#ede9fe;color:#7c3aed}
+        .info-card .card-icon.orange{background:#ffedd5;color:#ea580c}
+        .info-card .card-label{font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px}
+        .info-card .card-value{font-size:18px;font-weight:600;color:#0f172a}
+        
+        /* Stats Row */
+        .stats-row{display:flex;gap:12px;margin:16px 0;flex-wrap:wrap}
+        .stat-pill{background:#fff;border:1px solid #e2e8f0;border-radius:50px;padding:8px 16px;display:flex;align-items:center;gap:8px;font-size:13px}
+        .stat-pill .stat-dot{width:8px;height:8px;border-radius:50%}
+        .stat-pill .stat-dot.green{background:#22c55e}
+        .stat-pill .stat-dot.blue{background:#3b82f6}
+        .stat-pill .stat-dot.yellow{background:#eab308}
+        .stat-pill .stat-label{color:#64748b}
+        .stat-pill .stat-value{font-weight:600;color:#0f172a}
+        
+        /* Tables */
+        .table-container{background:#fff;border-radius:12px;overflow:hidden;margin:16px 0;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,0.05)}
+        .table-header{background:linear-gradient(135deg,#1e40af 0%,#1d4ed8 100%);color:#fff;padding:14px 18px;font-weight:600;font-size:14px;display:flex;align-items:center;gap:8px}
+        .table-header svg{width:18px;height:18px}
+        table{width:100%;border-collapse:collapse;font-size:13px}
+        th{background:#f8fafc;color:#475569;font-weight:600;text-transform:uppercase;font-size:10px;letter-spacing:0.5px;padding:12px 14px;text-align:left;border-bottom:1px solid #e2e8f0}
+        td{padding:12px 14px;border-bottom:1px solid #f1f5f9;color:#334155}
+        tr:last-child td{border-bottom:none}
+        tr:hover td{background:#f8fafc}
+        .highlight-cell{background:#dcfce7;color:#15803d;font-weight:600;border-radius:4px;padding:2px 6px}
+        
+        /* Section Headers */
+        .section-header{display:flex;align-items:center;gap:10px;margin:20px 0 12px 0}
+        .section-header .icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
+        .section-header .icon.green{background:#dcfce7}
+        .section-header .icon.blue{background:#dbeafe}
+        .section-header .icon.purple{background:#ede9fe}
+        .section-header h3{font-size:16px;font-weight:600;color:#0f172a}
+        
+        /* Checklist */
+        .checklist{margin:12px 0}
+        .check-item{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;background:#fff;border-radius:10px;margin-bottom:8px;border:1px solid #e2e8f0}
+        .check-item .check-icon{width:20px;height:20px;border-radius:50%;background:#dcfce7;color:#16a34a;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+        .check-item .check-icon svg{width:12px;height:12px}
+        .check-item .check-text{font-size:14px;color:#334155;line-height:1.5}
+        
+        /* Alert/Callout */
+        .callout{border-radius:12px;padding:16px 18px;margin:16px 0;display:flex;gap:12px}
+        .callout.success{background:#dcfce7;border:1px solid #86efac}
+        .callout.info{background:#dbeafe;border:1px solid #93c5fd}
+        .callout.warning{background:#fef3c7;border:1px solid #fcd34d}
+        .callout .callout-icon{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+        .callout.success .callout-icon{background:#16a34a;color:#fff}
+        .callout.info .callout-icon{background:#2563eb;color:#fff}
+        .callout.warning .callout-icon{background:#d97706;color:#fff}
+        .callout .callout-content{flex:1}
+        .callout .callout-title{font-weight:600;margin-bottom:4px;color:#0f172a}
+        .callout .callout-text{font-size:14px;color:#334155;line-height:1.5}
+        
+        /* LTV Bars */
+        .ltv-bar-container{margin:12px 0}
+        .ltv-bar-item{margin-bottom:12px}
+        .ltv-bar-label{display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px}
+        .ltv-bar-label span:first-child{color:#64748b}
+        .ltv-bar-label span:last-child{font-weight:600;color:#0f172a}
+        .ltv-bar{height:8px;background:#e2e8f0;border-radius:4px;overflow:hidden}
+        .ltv-bar-fill{height:100%;border-radius:4px;transition:width .5s ease}
+        .ltv-bar-fill.green{background:linear-gradient(90deg,#22c55e,#16a34a)}
+        .ltv-bar-fill.blue{background:linear-gradient(90deg,#3b82f6,#2563eb)}
+        .ltv-bar-fill.yellow{background:linear-gradient(90deg,#eab308,#ca8a04)}
+        
+        /* Source Footer */
+        .source-footer{margin-top:20px;padding-top:16px;border-top:1px solid #e2e8f0;font-size:12px;color:#94a3b8;display:flex;align-items:center;gap:6px}
+        .source-footer svg{width:14px;height:14px}
+        
+        /* Thinking */
+        .thinking-container{padding:12px 0}
+        .thinking-stage{display:flex;align-items:center;gap:10px;padding:10px 14px;margin-bottom:8px;background:#fff;border-radius:12px;font-size:14px;color:#64748b;border:1px solid #e2e8f0;animation:stageIn .3s ease}
+        @keyframes stageIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
+        .thinking-stage.active{color:#2563eb;background:#eff6ff;border-color:#bfdbfe}
+        .thinking-stage.complete{color:#059669;background:#ecfdf5;border-color:#a7f3d0}
+        .thinking-stage .icon{width:22px;height:22px;display:flex;align-items:center;justify-content:center}
+        .thinking-stage .spinner{width:18px;height:18px;border:2px solid #e5e7eb;border-top-color:#2563eb;border-radius:50%;animation:spin .8s linear infinite}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        .thinking-stage .text{flex:1;font-weight:500}
+        .thinking-elapsed{font-size:12px;color:#94a3b8}
+        
+        /* Input */
+        .input-area{padding:12px 16px 16px;background:#f8fafc}
+        .input-wrapper{display:flex;align-items:center;background:#fff;border-radius:24px;padding:4px 4px 4px 20px;border:1px solid #e2e8f0;box-shadow:0 2px 8px rgba(0,0,0,0.04);transition:all .2s}
+        .input-wrapper:focus-within{border-color:#2563eb;box-shadow:0 2px 12px rgba(37,99,235,0.15)}
+        .input-wrapper input{flex:1;background:transparent;border:none;outline:none;color:#1a1a1a;font-size:15px;font-family:inherit;padding:12px 0}
+        .input-wrapper input::placeholder{color:#94a3b8}
+        .send-btn{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#2563eb 0%,#1d4ed8 100%);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;box-shadow:0 2px 8px rgba(37,99,235,0.3)}
+        .send-btn:hover{transform:scale(1.05);box-shadow:0 4px 12px rgba(37,99,235,0.4)}
+        .send-btn:disabled{background:#cbd5e1;box-shadow:none;transform:none;cursor:not-allowed}
+        .send-btn svg{width:18px;height:18px;color:#fff}
+        
+        .welcome{text-align:center;padding:0 20px}
+        .welcome h2{font-size:24px;font-weight:600;color:#0f172a;margin-bottom:8px}
+        .welcome p{color:#64748b;font-size:15px}
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="messages" id="messages">
+            <div class="messages-inner" id="messagesInner">
+                <div class="welcome" id="welcome">
+                    <h2>Mortgage Pricing Assistant</h2>
+                    <p>Ask me anything about mortgages, I can even provide you scenario pricing.</p>
+                </div>
+            </div>
+        </div>
+        <div class="input-area">
+            <div class="input-wrapper">
+                <input type="text" id="questionInput" placeholder="Message..." autocomplete="off">
+                <button class="send-btn" id="sendBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 2L11 13"></path>
+                        <path d="M22 2L15 22L11 13L2 9L22 2Z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+    <script>
+        var PROXY_URL = '/api/chat';
+        var conversationHistory = [];
+        var hasMessages = false;
+        var messagesDiv = document.getElementById('messages');
+        var messagesInner = document.getElementById('messagesInner');
+        var questionInput = document.getElementById('questionInput');
+        var sendBtn = document.getElementById('sendBtn');
+
+        var thinkingStages = [
+            { id: 'analyze', text: 'Analyzing your question' },
+            { id: 'search', text: 'Searching program matrices' },
+            { id: 'calculate', text: 'Calculating eligibility' },
+            { id: 'format', text: 'Preparing response' }
+        ];
+
+        function addMessage(content, isUser) {
+            if (!hasMessages) {
+                var welcome = document.getElementById('welcome');
+                if (welcome) welcome.remove();
+                messagesInner.classList.add('has-messages');
+                hasMessages = true;
+            }
+            var messageDiv = document.createElement('div');
+            messageDiv.className = 'message ' + (isUser ? 'user' : 'assistant');
+            messageDiv.innerHTML = '<div class="content">' + content + '</div>';
+            messagesInner.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function showThinking() {
+            var thinkingDiv = document.createElement('div');
+            thinkingDiv.className = 'message assistant';
+            thinkingDiv.id = 'thinking';
+            var html = '<div class="thinking-container">';
+            for (var i = 0; i < thinkingStages.length; i++) {
+                html += '<div class="thinking-stage" id="stage-' + thinkingStages[i].id + '" style="display:none">';
+                html += '<div class="icon"><div class="spinner"></div></div>';
+                html += '<span class="text">' + thinkingStages[i].text + '</span>';
+                html += '<span class="thinking-elapsed" id="elapsed-' + thinkingStages[i].id + '"></span>';
+                html += '</div>';
+            }
+            html += '</div>';
+            thinkingDiv.innerHTML = html;
+            messagesInner.appendChild(thinkingDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            startThinkingStages();
+        }
+
+        var stageTimers = [];
+        var stageStartTime = 0;
+        var currentStageIndex = 0;
+        var elapsedInterval = null;
+
+        function startThinkingStages() {
+            stageStartTime = Date.now();
+            currentStageIndex = 0;
+            activateStage(0);
+            stageTimers.push(setTimeout(function() { completeStage(0); activateStage(1); }, 600));
+            stageTimers.push(setTimeout(function() { completeStage(1); activateStage(2); }, 1500));
+            stageTimers.push(setTimeout(function() { completeStage(2); activateStage(3); }, 2800));
+            elapsedInterval = setInterval(updateElapsedTime, 100);
+        }
+
+        function activateStage(index) {
+            if (index >= thinkingStages.length) return;
+            var stage = document.getElementById('stage-' + thinkingStages[index].id);
+            if (stage) {
+                stage.style.display = 'flex';
+                stage.className = 'thinking-stage active';
+                currentStageIndex = index;
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            }
+        }
+
+        function completeStage(index) {
+            var stage = document.getElementById('stage-' + thinkingStages[index].id);
+            if (stage) {
+                stage.className = 'thinking-stage complete';
+                stage.querySelector('.icon').innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+            }
+        }
+
+        function updateElapsedTime() {
+            var elapsed = ((Date.now() - stageStartTime) / 1000).toFixed(1);
+            var elapsedEl = document.getElementById('elapsed-' + thinkingStages[currentStageIndex].id);
+            if (elapsedEl) elapsedEl.textContent = elapsed + 's';
+        }
+
+        function removeThinking() {
+            for (var i = 0; i < stageTimers.length; i++) clearTimeout(stageTimers[i]);
+            stageTimers = [];
+            if (elapsedInterval) { clearInterval(elapsedInterval); elapsedInterval = null; }
+            for (var j = 0; j < thinkingStages.length; j++) {
+                completeStage(j);
+                var stage = document.getElementById('stage-' + thinkingStages[j].id);
+                if (stage) stage.style.display = 'flex';
+            }
+            setTimeout(function() {
+                var thinking = document.getElementById('thinking');
+                if (thinking) thinking.remove();
+            }, 400);
+        }
+
+        function replaceAll(str, find, replace) {
+            return str.split(find).join(replace);
+        }
+
+        function extractMaxLTV(text) {
+            var ltvMatches = [];
+            var words = text.split(/[\\s,]+/);
+            for (var i = 0; i < words.length; i++) {
+                if (words[i].indexOf('%') > -1) {
+                    var num = parseInt(words[i]);
+                    if (num >= 50 && num <= 100) ltvMatches.push(num);
+                }
+            }
+            return ltvMatches.length > 0 ? Math.max.apply(null, ltvMatches) : null;
+        }
+
+        function formatResponse(text) {
+            if (!text) return 'No response received';
+            
+            var lines = text.split('\\n');
+            var result = [];
+            var i = 0;
+            var inList = false;
+            var tableCount = 0;
+            var maxLTV = extractMaxLTV(text);
+            var hasHero = false;
+            
+            // Check for key metrics to show hero card
+            if (maxLTV && !hasHero) {
+                var heroCard = '<div class="hero-card">';
+                heroCard += '<div class="hero-label">Maximum Available</div>';
+                heroCard += '<div class="hero-value">' + maxLTV + '% LTV</div>';
+                heroCard += '<div class="hero-sub">Based on your criteria</div>';
+                heroCard += '</div>';
+                result.push(heroCard);
+                hasHero = true;
+            }
+            
+            while (i < lines.length) {
+                var line = lines[i];
+                var trimmed = line.trim();
+                
+                // Skip lines that just repeat the max LTV we already showed
+                if (hasHero && trimmed.toLowerCase().indexOf('maximum') > -1 && trimmed.indexOf(maxLTV + '%') > -1) {
+                    i++; continue;
+                }
+                
+                // Check for table
+                if (trimmed.indexOf('|') > -1 && i + 1 < lines.length) {
+                    var nextTrimmed = lines[i + 1].trim();
+                    var dashCount = 0;
+                    for (var d = 0; d < nextTrimmed.length; d++) if (nextTrimmed[d] === '-') dashCount++;
+                    
+                    if (nextTrimmed.indexOf('|') > -1 && dashCount >= 3) {
+                        // Get table title
+                        var tableTitle = '';
+                        if (result.length > 0) {
+                            var lastLine = result[result.length - 1];
+                            if (lastLine.indexOf('<') === -1 && lastLine.indexOf('|') === -1 && lastLine.trim() !== '') {
+                                tableTitle = result.pop().trim();
+                            }
+                        }
+                        
+                        // Parse header
+                        var headerCells = [];
+                        var hParts = trimmed.split('|');
+                        for (var hp = 0; hp < hParts.length; hp++) {
+                            var hc = hParts[hp].trim();
+                            if (hc !== '') headerCells.push(hc);
+                        }
+                        
+                        i += 2;
+                        
+                        // Parse rows
+                        var bodyRows = [];
+                        while (i < lines.length && lines[i].trim().indexOf('|') > -1) {
+                            var rowCells = [];
+                            var rParts = lines[i].trim().split('|');
+                            for (var rp = 0; rp < rParts.length; rp++) {
+                                var rc = rParts[rp].trim();
+                                if (rc !== '') rowCells.push(rc);
+                            }
+                            if (rowCells.length > 0) bodyRows.push(rowCells);
+                            i++;
+                        }
+                        
+                        tableCount++;
+                        var colors = ['#1e40af', '#7c3aed', '#0891b2', '#059669'];
+                        var color = colors[tableCount % colors.length];
+                        
+                        var tableHtml = '<div class="table-container">';
+                        if (tableTitle) {
+                            tableHtml += '<div class="table-header" style="background:linear-gradient(135deg,' + color + ' 0%,' + color + ' 100%)">';
+                            tableHtml += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>';
+                            tableHtml += tableTitle + '</div>';
+                        }
+                        tableHtml += '<table><thead><tr>';
+                        for (var th = 0; th < headerCells.length; th++) tableHtml += '<th>' + headerCells[th] + '</th>';
+                        tableHtml += '</tr></thead><tbody>';
+                        for (var tr = 0; tr < bodyRows.length; tr++) {
+                            tableHtml += '<tr>';
+                            for (var tc = 0; tc < bodyRows[tr].length; tc++) {
+                                var cellVal = bodyRows[tr][tc];
+                                // Highlight high LTV values
+                                if (cellVal.indexOf('%') > -1 && parseInt(cellVal) >= 75) {
+                                    tableHtml += '<td><span class="highlight-cell">' + cellVal + '</span></td>';
+                                } else {
+                                    tableHtml += '<td>' + cellVal + '</td>';
+                                }
+                            }
+                            tableHtml += '</tr>';
+                        }
+                        tableHtml += '</tbody></table></div>';
+                        result.push(tableHtml);
+                        continue;
+                    }
+                }
+                
+                // Section headers with icons
+                if (trimmed.indexOf('### ') === 0 || trimmed.indexOf('## ') === 0) {
+                    if (inList) { result.push('</div>'); inList = false; }
+                    var headerText = trimmed.indexOf('### ') === 0 ? trimmed.substring(4) : trimmed.substring(3);
+                    var iconClass = 'blue';
+                    var iconEmoji = '📋';
+                    if (headerText.toLowerCase().indexOf('key') > -1) { iconClass = 'green'; iconEmoji = '🔑'; }
+                    if (headerText.toLowerCase().indexOf('requirement') > -1) { iconClass = 'purple'; iconEmoji = '✓'; }
+                    if (headerText.toLowerCase().indexOf('program') > -1) { iconClass = 'blue'; iconEmoji = '📊'; }
+                    
+                    result.push('<div class="section-header"><div class="icon ' + iconClass + '">' + iconEmoji + '</div><h3>' + headerText + '</h3></div>');
+                    i++; continue;
+                }
+                
+                // Bullet points as checklist
+                if (trimmed.indexOf('- ') === 0) {
+                    if (!inList) { result.push('<div class="checklist">'); inList = true; }
+                    var itemText = trimmed.substring(2);
+                    // Process bold in item
+                    var parts = itemText.split('**');
+                    var processed = '';
+                    for (var p = 0; p < parts.length; p++) {
+                        processed += (p % 2 === 1) ? '<strong>' + parts[p] + '</strong>' : parts[p];
+                    }
+                    result.push('<div class="check-item"><div class="check-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg></div><div class="check-text">' + processed + '</div></div>');
+                    i++; continue;
+                }
+                
+                // Close checklist
+                if (inList && trimmed !== '' && trimmed.indexOf('- ') !== 0) {
+                    result.push('</div>');
+                    inList = false;
+                }
+                
+                // Skip dividers
+                if (trimmed === '---' || trimmed === '***' || trimmed === '') { i++; continue; }
+                
+                // Source footer
+                if (trimmed.toLowerCase().indexOf('source:') > -1) {
+                    var sourceText = trimmed;
+                    while (sourceText.indexOf('*') === 0) sourceText = sourceText.substring(1);
+                    while (sourceText.length > 0 && sourceText[sourceText.length-1] === '*') sourceText = sourceText.substring(0, sourceText.length - 1);
+                    result.push('<div class="source-footer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>' + sourceText + '</div>');
+                    i++; continue;
+                }
+                
+                // Emoji callouts
+                if (trimmed.indexOf('✅') === 0 || trimmed.indexOf('🎯') === 0 || trimmed.indexOf('⚠') === 0) {
+                    var calloutType = trimmed.indexOf('✅') === 0 ? 'success' : (trimmed.indexOf('⚠') === 0 ? 'warning' : 'info');
+                    var calloutText = trimmed.substring(trimmed.indexOf(' ') + 1);
+                    var cParts = calloutText.split('**');
+                    var cProcessed = '';
+                    for (var cp = 0; cp < cParts.length; cp++) {
+                        cProcessed += (cp % 2 === 1) ? '<strong>' + cParts[cp] + '</strong>' : cParts[cp];
+                    }
+                    result.push('<div class="callout ' + calloutType + '"><div class="callout-icon">' + trimmed[0] + '</div><div class="callout-content"><div class="callout-text">' + cProcessed + '</div></div></div>');
+                    i++; continue;
+                }
+                
+                // Regular paragraph
+                var pParts = trimmed.split('**');
+                var pProcessed = '';
+                for (var pp = 0; pp < pParts.length; pp++) {
+                    pProcessed += (pp % 2 === 1) ? '<strong>' + pParts[pp] + '</strong>' : pParts[pp];
+                }
+                if (pProcessed.trim() !== '') result.push('<p style="margin-bottom:12px;color:#334155;line-height:1.7">' + pProcessed + '</p>');
+                i++;
+            }
+            
+            if (inList) result.push('</div>');
+            
+            return result.join('');
+        }
+
+        function sendMessage() {
+            var question = questionInput.value.trim();
+            if (!question) return;
+            questionInput.value = '';
+            sendBtn.disabled = true;
+            addMessage(question, true);
+            conversationHistory.push({ role: 'user', content: question });
+            showThinking();
+            fetch(PROXY_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message: question,
+                    conversationHistory: conversationHistory,
+                    lastFormValues: {},
+                    enableCaching: true
+                })
+            })
+            .then(function(response) { return response.json(); })
+            .then(function(data) {
+                var responseText = data.response || data.message || JSON.stringify(data);
+                conversationHistory.push({ role: 'assistant', content: responseText });
+                removeThinking();
+                addMessage(formatResponse(responseText), false);
+                sendBtn.disabled = false;
+                questionInput.focus();
+            })
+            .catch(function(error) {
+                removeThinking();
+                addMessage('<strong>Error:</strong> ' + error.message, false);
+                sendBtn.disabled = false;
+                questionInput.focus();
+            });
+        }
+
+        sendBtn.addEventListener('click', sendMessage);
+        questionInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') sendMessage();
+        });
+    </script>
+</body>
+</html>
