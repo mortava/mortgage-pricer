@@ -4,7 +4,7 @@ const fetch = require('node-fetch');
 const path = require('path');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Enable CORS for all origins
 app.use(cors());
@@ -51,13 +51,19 @@ app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', message: 'Proxy server is running' });
 });
 
-app.listen(PORT, () => {
-    console.log(`
+// Only listen when running locally (not on Vercel)
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => {
+        console.log(`
 ╔════════════════════════════════════════════════════════╗
 ║    g1brokerAgent - AI Chat Proxy Server                ║
 ║                                                        ║
 ║   Server running at: http://localhost:${PORT}            ║
 ║   Open this URL in your browser to use the chat UI     ║
 ╚════════════════════════════════════════════════════════╝
-    `);
-});
+        `);
+    });
+}
+
+// Export for Vercel serverless
+module.exports = app;
