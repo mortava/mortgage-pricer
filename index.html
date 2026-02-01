@@ -3,14 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>G1 Mortgage Pricer - Get Your Best Rate</title>
-    <meta name="description" content="Get instant mortgage rate quotes with our AI-powered pricing engine" />
-
+    <title>Rate Quote Builder</title>
+    <meta name="description" content="AI-powered pricing engine" />
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-
     <style>
       :root {
         --bg-primary: #FFFFFF;
@@ -35,17 +33,14 @@
         --radius-xl: 24px;
         --radius-full: 9999px;
       }
-
       * {
         box-sizing: border-box;
         margin: 0;
         padding: 0;
       }
-
       html, body {
         height: 100%;
       }
-
       body {
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         font-size: 14px;
@@ -53,14 +48,12 @@
         background: var(--bg-secondary);
         line-height: 1.5;
       }
-
       /* App Layout */
       .app {
         height: 100dvh;
         display: flex;
         flex-direction: column;
       }
-
       /* Header */
       .header {
         height: 64px;
@@ -73,13 +66,11 @@
         flex-shrink: 0;
         box-shadow: var(--shadow-sm);
       }
-
       .logo-section {
         display: flex;
         align-items: center;
         gap: 12px;
       }
-
       .logo-icon {
         width: 40px;
         height: 40px;
@@ -90,18 +81,15 @@
         justify-content: center;
         box-shadow: var(--shadow);
       }
-
       .logo-icon svg {
         width: 22px;
         height: 22px;
         color: white;
       }
-
       .logo-text {
         display: flex;
         flex-direction: column;
       }
-
       .logo {
         font-family: 'Space Grotesk', sans-serif;
         font-weight: 700;
@@ -109,13 +97,11 @@
         letter-spacing: -0.02em;
         color: var(--text-primary);
       }
-
       .logo-tagline {
         font-size: 11px;
         color: var(--text-secondary);
         letter-spacing: 0.02em;
       }
-
       /* Tab Navigation */
       .tab-nav {
         display: flex;
@@ -124,7 +110,6 @@
         padding: 4px;
         border-radius: var(--radius-full);
       }
-
       .tab-btn {
         display: flex;
         align-items: center;
@@ -139,29 +124,24 @@
         border-radius: var(--radius-full);
         transition: all 0.2s ease;
       }
-
       .tab-btn:hover {
         color: var(--text-primary);
         background: rgba(0,0,0,0.05);
       }
-
       .tab-btn.active {
         background: var(--bg-primary);
         color: var(--text-primary);
         box-shadow: var(--shadow);
       }
-
       .tab-btn svg {
         width: 18px;
         height: 18px;
       }
-
       .header-right {
         display: flex;
         align-items: center;
         gap: 16px;
       }
-
       .help-btn {
         display: flex;
         align-items: center;
@@ -176,17 +156,14 @@
         border-radius: var(--radius-full);
         transition: all 0.2s ease;
       }
-
       .help-btn:hover {
         border-color: var(--accent);
         color: var(--accent);
       }
-
       .help-btn svg {
         width: 16px;
         height: 16px;
       }
-
       /* Main Content */
       .main {
         flex: 1;
@@ -194,71 +171,74 @@
         flex-direction: column;
         overflow: hidden;
       }
-
       /* Tab Panels */
       .tab-panel {
         flex: 1;
         display: none;
         overflow: hidden;
       }
-
       .tab-panel.active {
         display: flex;
         flex-direction: column;
       }
-
-      /* Pricing Engine Panel */
+      /* Pricing Engine Panel - UPDATED FOR FULL SCREEN FLEX */
       .pricing-panel {
         background: var(--bg-secondary);
-        padding: 24px;
-      }
-
-      .pricing-container {
         flex: 1;
-        max-width: 1400px;
-        width: 100%;
-        margin: 0 auto;
         display: flex;
         flex-direction: column;
-        gap: 24px;
+        padding: 0;
       }
-
+      .pricing-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: 100%;
+      }
       .pricing-header {
         text-align: center;
-        padding: 0 16px;
+        padding: 16px;
+        flex-shrink: 0;
       }
-
       .pricing-title {
         font-size: 28px;
         font-weight: 700;
         color: var(--text-primary);
         margin-bottom: 8px;
       }
-
       .pricing-subtitle {
         font-size: 16px;
         color: var(--text-secondary);
       }
-
+      /* UPDATED: Full-screen iframe wrapper with flex */
       .embed-wrapper {
         flex: 1;
+        display: flex;
+        flex-direction: column;
         background: var(--bg-primary);
-        border-radius: var(--radius-xl);
-        box-shadow: var(--shadow-lg);
         overflow: hidden;
-        min-height: 600px;
+        min-height: 0; /* Important for flex children */
         position: relative;
+      }
+      
+     /* Container to clip the top of the iframe */
+     .iframe-clip-container {
+       flex: 1;
+       position: relative;
+       overflow: hidden;
+       min-height: 0;
       }
 
       .embed-wrapper iframe {
         width: 100%;
-        height: 100%;
+        height: calc(100% + 140px); /* Add extra height to compensate for the hidden portion */
         border: none;
         position: absolute;
-        top: 0;
+        top: -140px; /* Hide top 2 inches (~192px) */
         left: 0;
-      }
-
+      }    
+        
       .embed-loading {
         position: absolute;
         top: 50%;
@@ -268,26 +248,23 @@
         flex-direction: column;
         align-items: center;
         gap: 16px;
+        z-index: 10;
       }
-
       .embed-loading .spinner {
         width: 40px;
-        height: 40px;
+        height: 60px;
         border: 3px solid var(--border);
         border-top-color: var(--accent);
         border-radius: 50%;
         animation: spin 0.8s linear infinite;
       }
-
       .embed-loading span {
         font-size: 14px;
         color: var(--text-secondary);
       }
-
       @keyframes spin {
         to { transform: rotate(360deg); }
       }
-
       /* Trust Indicators */
       .trust-bar {
         display: flex;
@@ -295,8 +272,8 @@
         gap: 32px;
         padding: 16px;
         flex-wrap: wrap;
+        flex-shrink: 0;
       }
-
       .trust-item {
         display: flex;
         align-items: center;
@@ -304,30 +281,28 @@
         font-size: 13px;
         color: var(--text-secondary);
       }
-
       .trust-item svg {
         width: 18px;
         height: 18px;
         color: var(--success);
       }
-
       /* Chat Panel */
       .chat-panel {
         background: var(--bg-primary);
+        flex: 1;
+        display: flex;
+        flex-direction: column;
       }
-
       .chat-container {
         flex: 1;
         overflow-y: auto;
         padding: 24px 16px;
       }
-
       .chat-inner {
         max-width: 768px;
         margin: 0 auto;
         width: 100%;
       }
-
       /* Welcome State */
       .welcome {
         display: flex;
@@ -338,7 +313,6 @@
         padding: 32px 16px;
         text-align: center;
       }
-
       .welcome-icon {
         width: 64px;
         height: 64px;
@@ -350,13 +324,11 @@
         margin-bottom: 24px;
         box-shadow: var(--shadow-md);
       }
-
       .welcome-icon svg {
         width: 32px;
         height: 32px;
         color: white;
       }
-
       .welcome-title {
         font-size: 28px;
         font-weight: 600;
@@ -364,13 +336,11 @@
         margin-bottom: 8px;
         line-height: 1.2;
       }
-
       .welcome-subtitle {
         font-size: 15px;
         color: var(--text-secondary);
         margin-bottom: 32px;
       }
-
       /* Quick Action Cards */
       .quick-actions {
         display: grid;
@@ -379,7 +349,6 @@
         width: 100%;
         max-width: 420px;
       }
-
       .quick-card {
         background: var(--bg-primary);
         border: 1px solid var(--border);
@@ -392,13 +361,11 @@
         display: flex;
         flex-direction: column;
       }
-
       .quick-card:hover {
         border-color: var(--accent);
         box-shadow: var(--shadow-md);
         transform: translateY(-2px);
       }
-
       .quick-card-icon {
         width: 36px;
         height: 36px;
@@ -410,44 +377,36 @@
         margin-bottom: 12px;
         color: var(--text-secondary);
       }
-
       .quick-card-title {
         font-size: 14px;
         font-weight: 500;
         color: var(--text-primary);
         line-height: 1.4;
       }
-
       /* Messages */
       .messages {
         display: none;
         flex-direction: column;
         gap: 24px;
       }
-
       .chat-started .welcome {
         display: none;
       }
-
       .chat-started .messages {
         display: flex;
       }
-
       .message {
         display: flex;
         gap: 12px;
         animation: fadeIn 0.3s ease;
       }
-
       @keyframes fadeIn {
         from { opacity: 0; transform: translateY(8px); }
         to { opacity: 1; transform: translateY(0); }
       }
-
       .message.user {
         flex-direction: row-reverse;
       }
-
       .message-avatar {
         width: 36px;
         height: 36px;
@@ -459,40 +418,33 @@
         font-size: 14px;
         font-weight: 500;
       }
-
       .message.assistant .message-avatar {
         background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
         color: white;
       }
-
       .message.user .message-avatar {
         display: none;
       }
-
       .message-content {
         max-width: 85%;
         min-width: 0;
       }
-
       .message-bubble {
         padding: 14px 18px;
         border-radius: var(--radius-lg);
         line-height: 1.6;
         box-shadow: var(--shadow-sm);
       }
-
       .message.user .message-bubble {
         background: var(--bg-user);
         color: var(--text-inverse);
         border-bottom-right-radius: 4px;
       }
-
       .message.assistant .message-bubble {
         background: var(--bg-assistant);
         color: var(--text-primary);
         border-bottom-left-radius: 4px;
       }
-
       /* Formatted content */
       .message-bubble h3, .message-bubble h4 {
         margin: 0 0 8px 0;
@@ -500,14 +452,12 @@
       }
       .message-bubble h3 { font-size: 15px; }
       .message-bubble h4 { font-size: 14px; }
-
       .message-bubble p {
         margin: 0 0 8px 0;
       }
       .message-bubble p:last-child {
         margin-bottom: 0;
       }
-
       .message-bubble ul {
         margin: 8px 0;
         padding-left: 20px;
@@ -515,7 +465,6 @@
       .message-bubble li {
         margin: 4px 0;
       }
-
       .message-bubble table {
         width: 100%;
         border-collapse: collapse;
@@ -534,11 +483,9 @@
       .message-bubble tr:nth-child(even) td {
         background: rgba(0, 0, 0, 0.02);
       }
-
       .message-bubble strong {
         font-weight: 600;
       }
-
       /* Thinking Stages */
       .thinking-stages {
         display: flex;
@@ -546,7 +493,6 @@
         gap: 8px;
         padding: 4px 0;
       }
-
       .thinking-stage {
         display: flex;
         align-items: center;
@@ -560,21 +506,17 @@
         transform: translateX(-8px);
         animation: stageIn 0.3s ease forwards;
       }
-
       @keyframes stageIn {
         to { opacity: 1; transform: translateX(0); }
       }
-
       .thinking-stage.active {
         color: var(--accent);
         background: rgba(59, 130, 246, 0.08);
       }
-
       .thinking-stage.complete {
         color: var(--success);
         background: rgba(16, 185, 129, 0.08);
       }
-
       .thinking-stage .stage-icon {
         width: 18px;
         height: 18px;
@@ -582,7 +524,6 @@
         align-items: center;
         justify-content: center;
       }
-
       .thinking-stage .spinner {
         width: 14px;
         height: 14px;
@@ -591,33 +532,28 @@
         border-radius: 50%;
         animation: spin 0.8s linear infinite;
       }
-
       .thinking-stage .check-icon {
         color: var(--success);
       }
-
       .thinking-stage .stage-text {
         flex: 1;
         font-weight: 500;
       }
-
       .thinking-stage .stage-time {
         font-size: 11px;
         opacity: 0.7;
       }
-
       /* Input Area */
       .composer {
         padding: 16px 16px 24px;
         background: var(--bg-primary);
         border-top: 1px solid var(--border);
+        flex-shrink: 0;
       }
-
       .composer-inner {
         max-width: 768px;
         margin: 0 auto;
       }
-
       .input-wrapper {
         display: flex;
         align-items: flex-end;
@@ -628,12 +564,10 @@
         padding: 8px 8px 8px 16px;
         transition: border-color 0.2s, box-shadow 0.2s;
       }
-
       .input-wrapper:focus-within {
         border-color: var(--accent);
         box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
       }
-
       .input-field {
         flex: 1;
         border: none;
@@ -648,11 +582,9 @@
         max-height: 160px;
         padding: 6px 0;
       }
-
       .input-field::placeholder {
         color: var(--text-secondary);
       }
-
       .send-btn {
         width: 40px;
         height: 40px;
@@ -667,28 +599,23 @@
         transition: transform 0.15s, background 0.15s;
         flex-shrink: 0;
       }
-
       .send-btn:hover {
         background: var(--accent-hover);
         transform: scale(1.05);
       }
-
       .send-btn:active {
         transform: scale(0.95);
       }
-
       .send-btn:disabled {
         opacity: 0.4;
         cursor: not-allowed;
         transform: none;
       }
-
       .send-btn svg {
         width: 18px;
         height: 18px;
       }
-
-      /* Footer */
+      /* Footer - Hidden on pricing panel for more space */
       .footer {
         padding: 12px 24px;
         text-align: center;
@@ -696,95 +623,82 @@
         color: var(--text-secondary);
         background: var(--bg-primary);
         border-top: 1px solid var(--border);
+        flex-shrink: 0;
+        display: none; /* Hide footer to maximize iframe space */
       }
-
       .footer a {
         color: var(--accent);
         text-decoration: none;
       }
-
       .footer a:hover {
         text-decoration: underline;
       }
-
-      /* Responsive */
+      /* Responsive - UPDATED FOR MOBILE STACKING */
       @media (max-width: 768px) {
         .header {
           padding: 0 16px;
           height: 56px;
         }
-
         .logo-text {
           display: none;
         }
-
         .tab-btn span {
           display: none;
         }
-
         .tab-btn {
           padding: 10px 14px;
         }
-
         .help-btn span {
           display: none;
         }
-
         .help-btn {
           padding: 8px;
         }
-
+        /* Mobile: Stack layout - iframe takes full remaining height */
         .pricing-panel {
-          padding: 16px;
+          padding: 0;
         }
-
+        .pricing-header {
+          padding: 12px 16px;
+        }
         .pricing-title {
-          font-size: 22px;
+          font-size: 20px;
         }
-
         .pricing-subtitle {
-          font-size: 14px;
+          font-size: 13px;
         }
-
         .embed-wrapper {
-          border-radius: var(--radius-lg);
-          min-height: 500px;
+          border-radius: 0;
+          flex: 1;
+          min-height: 0;
         }
-
         .trust-bar {
           gap: 16px;
+          padding: 12px;
         }
-
         .trust-item span {
           display: none;
         }
-
         .chat-container {
           padding: 16px 12px;
         }
-
         .welcome-title {
           font-size: 24px;
         }
-
         .quick-actions {
-          grid-template-columns: 1fr;
+          grid-template-columns: 1fr; /* Stack cards on mobile */
           max-width: 100%;
         }
-
         .quick-card {
           min-height: 80px;
         }
-
         .message-content {
           max-width: 90%;
         }
-
         .composer {
           padding: 12px;
         }
       }
-
       @media (prefers-reduced-motion: reduce) {
         .message, .quick-card, .thinking-stage {
           animation: none;
@@ -793,7 +707,6 @@
       }
     </style>
   </head>
-
   <body>
     <div class="app" id="app">
       <!-- Header -->
@@ -806,11 +719,10 @@
             </svg>
           </div>
           <div class="logo-text">
-            <span class="logo">G1 MORTGAGE</span>
-            <span class="logo-tagline">Powered by PMF</span>
+            <span class="logo">AI TOOLS by G1 GROUP</span>
+            <span class="logo-tagline"></span>
           </div>
         </div>
-
         <nav class="tab-nav">
           <button class="tab-btn active" data-tab="pricing">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -826,7 +738,6 @@
             <span>AI Assistant</span>
           </button>
         </nav>
-
         <div class="header-right">
           <button class="help-btn">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -834,71 +745,33 @@
               <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
               <line x1="12" y1="17" x2="12.01" y2="17"></line>
             </svg>
-            <span>Help</span>
           </button>
         </div>
       </header>
-
       <!-- Main Content -->
       <main class="main">
-        <!-- Pricing Engine Tab -->
+        <!-- Pricing Tab -->
         <div class="tab-panel active" id="panel-pricing">
           <div class="pricing-panel">
             <div class="pricing-container">
-              <div class="pricing-header">
-                <h1 class="pricing-title">Get Your Personalized Rate Quote</h1>
-                <p class="pricing-subtitle">Enter your loan details below to see today's best rates</p>
-              </div>
-
               <div class="embed-wrapper" id="embedWrapper">
                 <div class="embed-loading" id="embedLoading">
                   <div class="spinner"></div>
                   <span>Loading pricing engine...</span>
                 </div>
+                <div class="iframe-clip-container">
                 <iframe
                   id="pricingEmbed"
-                  src="https://grow.g1wins.com/pricing-engine-embed?key=g1_live_7GnMocrNBm04Rduku-zrlWwgdVn31QdK&borrowerMode=true&leadId=03b54ca8-0a6a-464b-9afd-8176ed3460fb&margin=150&hideHeader=true&hideFooter=true&embedded=true"
-                  title="G1 Mortgage Pricing Engine"
+                  src="https://grow.g1wins.com/pricing-engine-embed?key=g1_live_7GnMocrNBm04Rduku-zrlWwgdVn31QdK&borrowerMode=true&leadId=03b54ca8-0a6a-464b-9afd-8176ed3460fb&margin=150"
+                  title="Rate Quote"
                   loading="eager"
                   allow="clipboard-write"
                   onload="document.getElementById('embedLoading').style.display='none';"
                 ></iframe>
               </div>
-
-              <div class="trust-bar">
-                <div class="trust-item">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                  </svg>
-                  <span>Bank-level security</span>
-                </div>
-                <div class="trust-item">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="20 6 9 17 4 12"></polyline>
-                  </svg>
-                  <span>No credit check required</span>
-                </div>
-                <div class="trust-item">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <polyline points="12 6 12 12 16 14"></polyline>
-                  </svg>
-                  <span>Instant quotes</span>
-                </div>
-                <div class="trust-item">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="9" cy="7" r="4"></circle>
-                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                  </svg>
-                  <span>Expert support</span>
-                </div>
-              </div>
             </div>
           </div>
         </div>
-
         <!-- Chat Tab -->
         <div class="tab-panel" id="panel-chat">
           <div class="chat-panel">
@@ -913,7 +786,6 @@
                   </div>
                   <h1 class="welcome-title" id="welcomeTitle">How can I help you today?</h1>
                   <p class="welcome-subtitle">Your AI-powered mortgage assistant</p>
-
                   <div class="quick-actions">
                     <button class="quick-card" data-prompt="Help me understand if I qualify for a mortgage">
                       <div class="quick-card-icon">
@@ -926,7 +798,6 @@
                       </div>
                       <span class="quick-card-title">Help me qualify</span>
                     </button>
-
                     <button class="quick-card" data-prompt="I'd like to get a rate quote for a home purchase">
                       <div class="quick-card-icon">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -936,7 +807,6 @@
                       </div>
                       <span class="quick-card-title">Get a rate quote</span>
                     </button>
-
                     <button class="quick-card" data-prompt="What are current mortgage rates today?">
                       <div class="quick-card-icon">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -946,7 +816,6 @@
                       </div>
                       <span class="quick-card-title">Today's rates</span>
                     </button>
-
                     <button class="quick-card" data-prompt="I want to refinance my current mortgage">
                       <div class="quick-card-icon">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -957,12 +826,10 @@
                     </button>
                   </div>
                 </div>
-
                 <!-- Messages -->
                 <div class="messages" id="messages"></div>
               </div>
             </div>
-
             <!-- Input Area -->
             <div class="composer">
               <div class="composer-inner">
@@ -974,7 +841,6 @@
                     placeholder="Ask me anything about mortgages..."
                     aria-label="Message input"
                   ></textarea>
-
                   <button type="submit" class="send-btn" id="sendBtn" disabled aria-label="Send message">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <line x1="22" y1="2" x2="11" y2="13"></line>
@@ -987,13 +853,7 @@
           </div>
         </div>
       </main>
-
-      <!-- Footer -->
-      <footer class="footer">
-        <span>&copy; 2025 G1 Mortgage. All rights reserved. <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></span>
-      </footer>
     </div>
-
     <script>
       const PROXY_URL = '/api/chat';
       const app = document.getElementById('app');
@@ -1006,18 +866,14 @@
       const quickCards = document.querySelectorAll('.quick-card');
       const tabBtns = document.querySelectorAll('.tab-btn');
       const tabPanels = document.querySelectorAll('.tab-panel');
-
       let conversationHistory = [];
       let chatStarted = false;
-
       // Tab switching
       tabBtns.forEach(btn => {
         btn.addEventListener('click', () => {
           const tabId = btn.dataset.tab;
-
           tabBtns.forEach(b => b.classList.remove('active'));
           btn.classList.add('active');
-
           tabPanels.forEach(panel => {
             panel.classList.remove('active');
             if (panel.id === `panel-${tabId}`) {
@@ -1026,7 +882,6 @@
           });
         });
       });
-
       // Greetings
       const greetings = [
         "How can I help you today?",
@@ -1035,29 +890,23 @@
         "What questions do you have?",
         "I'm here to help with your mortgage.",
       ];
-
       welcomeTitle.textContent = greetings[Math.floor(Math.random() * greetings.length)];
-
       // Auto-grow textarea
       const autoGrow = (el) => {
         el.style.height = '24px';
         el.style.height = Math.min(el.scrollHeight, 160) + 'px';
       };
-
       const updateSendBtn = () => {
         sendBtn.disabled = !inputField.value.trim();
       };
-
       const scrollToBottom = () => {
         chatContainer.scrollTop = chatContainer.scrollHeight;
       };
-
       const startChat = () => {
         if (chatStarted) return;
         chatStarted = true;
         document.querySelector('.chat-inner').classList.add('chat-started');
       };
-
       // Thinking stages
       const thinkingStages = [
         { id: 'analyze', text: 'Analyzing your question', delay: 0 },
@@ -1065,29 +914,23 @@
         { id: 'calculate', text: 'Calculating eligibility', delay: 1500 },
         { id: 'format', text: 'Preparing response', delay: 2800 }
       ];
-
       let stageTimers = [];
       let stageStartTime = 0;
       let currentStageIndex = 0;
       let elapsedInterval = null;
-
       const formatCellContent = (text) => {
-        return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        return text.replace(/\\*\\*(.*?)\\*\\*/g, '<strong>$1</strong>');
       };
-
       const convertMarkdownTables = (text) => {
-        const tableRegex = /\|(.+)\|\n\|[-|\s]+\|\n((?:\|.+\|\n?)+)/g;
-
+        const tableRegex = /\\|(.+)\\|\\n\\|[-|\\s]+\\|\\n((?:\\|.+\\|\\n?)+)/g;
         return text.replace(tableRegex, (match, headerRow, bodyRows) => {
           const headers = headerRow.split('|').map(h => h.trim()).filter(h => h);
-          const rows = bodyRows.trim().split('\n');
-
+          const rows = bodyRows.trim().split('\\n');
           let table = '<table><thead><tr>';
           headers.forEach(h => {
             table += `<th>${formatCellContent(h)}</th>`;
           });
           table += '</tr></thead><tbody>';
-
           rows.forEach(row => {
             const cells = row.split('|').map(c => c.trim()).filter(c => c);
             table += '<tr>';
@@ -1100,229 +943,32 @@
           return table;
         });
       };
-
       const formatResponse = (text) => {
         if (!text) return 'No response received';
-
         let formatted = text;
         formatted = convertMarkdownTables(formatted);
         formatted = formatted.replace(/^### (.*$)/gm, '<h4>$1</h4>');
         formatted = formatted.replace(/^## (.*$)/gm, '<h3>$1</h3>');
-        formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-        formatted = formatted.replace(/\*(.*?)\*/g, '<em>$1</em>');
+        formatted = formatted.replace(/\\*\\*(.*?)\\*\\*/g, '<strong>$1</strong>');
+        formatted = formatted.replace(/\\*(.*?)\\*/g, '<em>$1</em>');
         formatted = formatted.replace(/^- (.*$)/gm, '<li>$1</li>');
-        formatted = formatted.replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>');
-        formatted = formatted.replace(/\n\n/g, '</p><p>');
-        formatted = formatted.replace(/\n/g, '<br>');
-
+        formatted = formatted.replace(/(<li>.*<\\/li>\\n?)+/g, '<ul>$&</ul>');
+        formatted = formatted.replace(/\\n\\n/g, '</p><p>');
+        formatted = formatted.replace(/\\n/g, '<br>');
         if (!formatted.startsWith('<')) {
           formatted = '<p>' + formatted + '</p>';
         }
-
         return formatted;
       };
-
       const addMessage = (role, text) => {
         const thinkingEl = document.getElementById('thinkingMessage');
         if (thinkingEl) {
           clearThinkingStages();
           setTimeout(() => thinkingEl.remove(), 300);
         }
-
         const message = document.createElement('div');
         message.className = `message ${role}`;
-
         const avatar = document.createElement('div');
         avatar.className = 'message-avatar';
         if (role === 'assistant') {
-          avatar.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>';
-        }
-
-        const content = document.createElement('div');
-        content.className = 'message-content';
-
-        const bubble = document.createElement('div');
-        bubble.className = 'message-bubble';
-
-        if (role === 'assistant') {
-          bubble.innerHTML = formatResponse(text);
-        } else {
-          bubble.textContent = text;
-        }
-
-        content.appendChild(bubble);
-        message.appendChild(avatar);
-        message.appendChild(content);
-        messagesEl.appendChild(message);
-
-        scrollToBottom();
-      };
-
-      const showThinking = () => {
-        const message = document.createElement('div');
-        message.className = 'message assistant';
-        message.id = 'thinkingMessage';
-
-        const avatar = document.createElement('div');
-        avatar.className = 'message-avatar';
-        avatar.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>';
-
-        const content = document.createElement('div');
-        content.className = 'message-content';
-
-        const bubble = document.createElement('div');
-        bubble.className = 'message-bubble';
-
-        let stagesHtml = '<div class="thinking-stages">';
-        thinkingStages.forEach(stage => {
-          stagesHtml += `<div class="thinking-stage" id="stage-${stage.id}" style="display:none;">
-            <div class="stage-icon"><div class="spinner"></div></div>
-            <span class="stage-text">${stage.text}</span>
-            <span class="stage-time" id="time-${stage.id}"></span>
-          </div>`;
-        });
-        stagesHtml += '</div>';
-        bubble.innerHTML = stagesHtml;
-
-        content.appendChild(bubble);
-        message.appendChild(avatar);
-        message.appendChild(content);
-        messagesEl.appendChild(message);
-
-        scrollToBottom();
-        startThinkingStages();
-      };
-
-      const startThinkingStages = () => {
-        stageStartTime = Date.now();
-        currentStageIndex = 0;
-        stageTimers = [];
-
-        activateStage(0);
-        stageTimers.push(setTimeout(() => { completeStage(0); activateStage(1); }, 600));
-        stageTimers.push(setTimeout(() => { completeStage(1); activateStage(2); }, 1500));
-        stageTimers.push(setTimeout(() => { completeStage(2); activateStage(3); }, 2800));
-
-        elapsedInterval = setInterval(updateElapsedTime, 100);
-      };
-
-      const activateStage = (index) => {
-        if (index >= thinkingStages.length) return;
-        const stage = document.getElementById(`stage-${thinkingStages[index].id}`);
-        if (stage) {
-          stage.style.display = 'flex';
-          stage.style.animationDelay = '0s';
-          stage.className = 'thinking-stage active';
-          currentStageIndex = index;
-          scrollToBottom();
-        }
-      };
-
-      const completeStage = (index) => {
-        const stage = document.getElementById(`stage-${thinkingStages[index].id}`);
-        if (stage) {
-          stage.className = 'thinking-stage complete';
-          stage.querySelector('.stage-icon').innerHTML = '<svg class="check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
-        }
-      };
-
-      const updateElapsedTime = () => {
-        const elapsed = ((Date.now() - stageStartTime) / 1000).toFixed(1);
-        const timeEl = document.getElementById(`time-${thinkingStages[currentStageIndex].id}`);
-        if (timeEl) timeEl.textContent = `${elapsed}s`;
-      };
-
-      const clearThinkingStages = () => {
-        stageTimers.forEach(timer => clearTimeout(timer));
-        stageTimers = [];
-        if (elapsedInterval) {
-          clearInterval(elapsedInterval);
-          elapsedInterval = null;
-        }
-        thinkingStages.forEach((stage, i) => {
-          completeStage(i);
-          const stageEl = document.getElementById(`stage-${stage.id}`);
-          if (stageEl) stageEl.style.display = 'flex';
-        });
-      };
-
-      const sendMessage = async (text) => {
-        startChat();
-        addMessage('user', text);
-        conversationHistory.push({ role: 'user', content: text });
-
-        showThinking();
-        sendBtn.disabled = true;
-
-        try {
-          const res = await fetch(PROXY_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              message: text,
-              conversationHistory: conversationHistory,
-              lastFormValues: {},
-              enableCaching: true
-            }),
-          });
-
-          if (!res.ok) throw new Error('Request failed');
-
-          const data = await res.json();
-          const responseText = data.response || data.message || JSON.stringify(data);
-
-          conversationHistory.push({ role: 'assistant', content: responseText });
-          addMessage('assistant', responseText);
-
-        } catch (err) {
-          addMessage('assistant', 'Sorry, something went wrong. Please try again.');
-        }
-
-        updateSendBtn();
-        inputField.focus();
-      };
-
-      // Event listeners
-      inputField.addEventListener('input', () => {
-        autoGrow(inputField);
-        updateSendBtn();
-      });
-
-      inputField.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-          e.preventDefault();
-          if (!sendBtn.disabled) inputForm.requestSubmit();
-        }
-      });
-
-      inputForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const text = inputField.value.trim();
-        if (!text) return;
-
-        inputField.value = '';
-        autoGrow(inputField);
-        updateSendBtn();
-
-        sendMessage(text);
-      });
-
-      quickCards.forEach(card => {
-        card.addEventListener('click', () => {
-          const prompt = card.dataset.prompt;
-          if (prompt) {
-            inputField.value = prompt;
-            autoGrow(inputField);
-            updateSendBtn();
-            sendMessage(prompt);
-            inputField.value = '';
-          }
-        });
-      });
-
-      // Initialize
-      autoGrow(inputField);
-      updateSendBtn();
-    </script>
-  </body>
-</html>
+          avatar.innerHTML
